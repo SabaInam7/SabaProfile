@@ -18,6 +18,16 @@ const ProfileHeader = ({}) => {
     connectedAccount,
     contract,
   } = useContext(InscribleContext);
+  useEffect(() => {
+    const checkFriends = async () => {
+      await checkAlreadyFriend({
+        connectedAccountAddress: connectedAccount,
+        accountAddress: address,
+      });
+    };
+
+    checkFriends();
+  }, [connectedAccount, contract]);
 
   const users = [
     {
@@ -59,35 +69,6 @@ const ProfileHeader = ({}) => {
       setIsFollowing(true); // Update the state to reflect following
     }
   };
-  useEffect(() => {
-    const checkFriends = async () => {
-      await checkAlreadyFriend({
-        connectedAccountAddress: connectedAccount,
-        accountAddress: address,
-      });
-    };
-
-    checkFriends();
-  }, [connectedAccount, contract]);
-
-  // useEffect(() => {
-  //   const checkFriends = async () => {
-  //     try {
-  //       await ConnectWallet();
-  //       const checkUserFriend = await checkAlreadyFriend(
-  //         connectedAccount,
-  //         address
-  //       );
-  //       console.log("checkUserFriend: ", checkUserFriend);
-  //       setIsFollowing(checkUserFriend);
-  //     } catch (error) {
-  //       console.error("Error occurred while checking friends:", error);
-  //       // Handle the error appropriately, such as setting an error state
-  //     }
-  //   };
-
-  //   checkFriends();
-  // }, []);
 
   return (
     <>

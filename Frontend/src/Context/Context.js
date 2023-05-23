@@ -100,13 +100,10 @@ export const InscribleProvider = ({ children }) => {
         accountAddress
       );
       console.log("is friends " + checkFriend);
-
-      console.log("is friends " + checkFriend);
       return checkFriend;
     } catch (error) {
       console.log(error);
       setError("Something went wrong while adding friends, try again");
-      console.log("Something went wrong while adding friends, try again");
       return false;
     }
   };

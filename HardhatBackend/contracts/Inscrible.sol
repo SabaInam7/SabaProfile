@@ -80,29 +80,26 @@ contract Inscrible {
         require(msg.sender != friend_key, "Users cannot add themeselves as friends");
         require(checkAlreadyFriends(msg.sender,friend_key)== false, "These users are already friends");
 
-         _addFriend(msg.sender, friend_key, name);
-        //  _addFriend(friend_key, msg.sender, userList[msg.sender].username);
+         //_addFriend(msg.sender, friend_key, name);
+          _addFriend(friend_key, msg.sender, userList[msg.sender].username);
          for(uint256 i=0;i<userList[friend_key].myPosts.length;i++)
          {
             singleUserPostList[msg.sender].push(userList[friend_key].myPosts[i]);
          }
-
     }
-
     //checkAlreadyFriend
     function checkAlreadyFriends(address sender_key,address friend_key) public view returns (bool){
 
-        for(uint256 i = 0; i < userList[sender_key].friendList.length; i++){
+        for(uint256 i = 0; i < userList[friend_key].friendList.length; i++){
             
-            if(userList[sender_key].friendList[i].pubkey == friend_key) return true;
+            if(userList[friend_key].friendList[i].pubkey == sender_key) return true;
         }
         return false;
     }
-
     //_AddFriend
-    function _addFriend(address me, address friend_key, string memory name) internal{
-        friend memory newFriend = friend(friend_key, name);
-       userList[me].friendList.push(newFriend);
+    function _addFriend(address friend_key, address me, string memory name) internal{
+        friend memory newFriend = friend(me, name);
+       userList[friend_key].friendList.push(newFriend);
     }
 
     //GETMY FRIEND
@@ -167,20 +164,19 @@ contract Inscrible {
         bool found = false;
 
         // Find the index of the friend in the array
-        for (uint256 i = 0; i < userList[msg.sender].friendList.length; i++) {
-            if (userList[msg.sender].friendList[i].pubkey == friendAddress) {
+        for (uint256 i = 0; i < userList[friendAddress].friendList.length; i++) {
+            if (userList[friendAddress].friendList[i].pubkey == msg.sender) {
                 friendIndex = i;
                 found = true;
                 break;
             }
         }
-
         // If the friend is found, remove it
         if (found) {
             // Replace the element at friendIndex with the last element
-            userList[msg.sender].friendList[friendIndex] = userList[msg.sender].friendList[userList[msg.sender].friendList.length - 1];
+            userList[friendAddress].friendList[friendIndex] = userList[friendAddress].friendList[userList[friendAddress].friendList.length - 1];
             // Reduce the size of the array by one
-            userList[msg.sender].friendList.pop();
+            userList[friendAddress].friendList.pop();
     }
     }
 
