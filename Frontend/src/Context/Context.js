@@ -66,7 +66,7 @@ export const InscribleProvider = ({ children }) => {
       //GETTING FIRST ACCOUNT FROM ACCOUNTS ARRAY
       const firstAccount = accounts[0];
       setConnectedAccount(firstAccount);
-
+      setCurrentUsername(firstAccount.username);
       const _contract = await CreateContract();
 
       setContract(_contract);
@@ -185,6 +185,12 @@ export const InscribleProvider = ({ children }) => {
       return false;
     }
   };
+  const GetUserName = async () => {
+    const _username = await contract.getUsername(connectedAccount);
+    setCurrentUsername(_username);
+
+    console.log("YEEEEEEEEEEEES", _username);
+  };
 
   const UploadPost = async (imageHash, caption, imageText) => {
     setIsLoading(true);
@@ -246,6 +252,7 @@ export const InscribleProvider = ({ children }) => {
         GetPostByUser,
         getAllAppUser,
         addFriends,
+        GetUserName,
         removeFriends,
         isMetamask,
         connectedAccount,

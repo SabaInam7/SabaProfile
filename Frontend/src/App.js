@@ -12,6 +12,7 @@ import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ProfileHeader } from "./Components/Index";
+import MyProfile from "./Containers/MyProfile/MyProfile";
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <Route path="/signup" element={<SignUp />}></Route>
         <Route path="/create" element={<Create />}></Route>
         <Route path="/search" element={<Search />}></Route>
+        <Route path="/profile" element={<MyProfile />}></Route>
+
         <Route path="/profile/:address/:username" element={<Profile />}></Route>
       </Routes>
       <ToastContainer />

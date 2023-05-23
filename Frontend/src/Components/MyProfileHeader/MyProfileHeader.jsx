@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import "./ProfileHeader.css";
+import "./MyProfileHeader.css";
 import { ProfilePosts, ProfileUserCard } from "../Index";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { InscribleContext } from "../../Context/Context";
 
-const ProfileHeader = ({}) => {
+const MyProfileHeader = ({}) => {
   const [isPost, setIsPost] = useState(true);
   const [isFollower, setIsFollower] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -22,31 +22,33 @@ const ProfileHeader = ({}) => {
     contract,
     getMyProfilePost,
     myProfilePosts,
+    currentUsername,
+    GetUserName,
   } = useContext(InscribleContext);
   useEffect(() => {
     const checkFriends = async () => {
       const isFollowStatus = await checkAlreadyFriend({
         connectedAccountAddress: connectedAccount,
-        accountAddress: address,
+        accountAddress: connectedAccount,
       });
       setIsFollowingBtn(isFollowStatus);
-      console.log("isFoolowSTatus    " + isFollowStatus);
     };
 
     checkFriends();
-    getMyFollowingsList();
     getFollowersList();
-    getMyProfilePost(address);
+    getMyFollowingsList();
+    getMyProfilePost(connectedAccount);
+    GetUserName();
   }, [connectedAccount, contract]);
 
-  const { username, address } = useParams();
+  // const { username, address } = useParams();
   const getFollowersList = async () => {
-    const followerListing = await contract.getMyFollowersList(address);
+    const followerListing = await contract.getMyFollowersList(connectedAccount);
     setfollowerListing(followerListing);
   };
 
   const getMyFollowingsList = async () => {
-    const followingList = await contract.getMyFollowingsList(address);
+    const followingList = await contract.getMyFollowingsList(connectedAccount);
     setfollowingList(followingList);
   };
 
@@ -55,13 +57,13 @@ const ProfileHeader = ({}) => {
     if (isFollowingBtn) {
       // Perform the unfollow action
       // ...
-      removeFriends({ accountAddress: address });
+      removeFriends({ accountAddress: connectedAccount });
 
       setIsFollowingBtn(false); // Update the state to reflect unfollowing
     } else {
       // Perform the follow action
       // ...
-      addFriends({ accountAddress: address });
+      addFriends({ accountAddress: connectedAccount });
 
       setIsFollowingBtn(true); // Update the state to reflect following
     }
@@ -81,11 +83,8 @@ const ProfileHeader = ({}) => {
         <div className="profile-header_content">
           <div className="profile-header_content-name-edit">
             <p id="profile-name" className="bold-5 size-l">
-              {username}
+              {currentUsername}
             </p>
-            <button onClick={handleFollowToggle}>
-              {isFollowingBtn ? "Unfollow" : "Follow"}
-            </button>
           </div>
           <div className="profile-header_content-info">
             <div>
@@ -96,7 +95,7 @@ const ProfileHeader = ({}) => {
                   setIsFollower(false);
                   setIsFollowing(false);
                   setIsPost(true);
-                  getMyProfilePost(address);
+                  getMyProfilePost(connectedAccount);
                 }}
               >
                 {" "}
@@ -150,7 +149,7 @@ const ProfileHeader = ({}) => {
                 <ProfileUserCard
                   userName={item.name}
                   profilePic={item.pic}
-                  address={item.address}
+                  address={connectedAccount}
                   key={i}
                 />
               );
@@ -170,7 +169,7 @@ const ProfileHeader = ({}) => {
                 <ProfileUserCard
                   userName={item.name}
                   profilePic={item.pic}
-                  address={item.address}
+                  address={connectedAccount}
                   key={i}
                 />
               );
@@ -182,4 +181,4 @@ const ProfileHeader = ({}) => {
   );
 };
 
-export default ProfileHeader;
+export default MyProfileHeader;
