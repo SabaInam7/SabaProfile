@@ -28,7 +28,7 @@ contract Inscrible {
     uint postCount = 0;
     ///Friend list
    
-    
+    mapping(address=>Post[]) AllFriendPosts;
 
     //CONTAINING ALL THE POSTS UPLOADED BY USERS
     struct Post{
@@ -162,11 +162,11 @@ contract Inscrible {
     }
 
     //GETMY FRIEND
-    function getMyFollowersList(address _user) external view returns(friend[] memory){
-        return userList[_user].followersList;
+    function getMyFollowersList() external view returns(friend[] memory){
+        return userList[msg.sender].followersList;
     }
-    function getMyFollowingsList(address _user) external view returns(friend[] memory){
-        return userList[_user].followingsList;
+    function getMyFollowingsList() external view returns(friend[] memory){
+        return userList[msg.sender].followingsList;
     }
 
     //TO POST IMAGES TO BLOCKCHAIN
@@ -212,19 +212,29 @@ contract Inscrible {
         }
     }
 
-    function getMyProfilePost (address _user) public view returns(Post [] memory)
-    {   
-        return userList[_user].myPosts;
-    }
-
     function getSingleUserLatestPost(address key) public view returns(Post memory){
         
             return  singleUserPostList[key][singleUserPostList[key].length-1]; 
         
     } 
-  
+    ////friends posts 
 
-  
+    //  function _AllFriendPosts()  internal {
+    //     address friendAddress;
+    //     Post [] memory postArray;
+    //     require(userList[msg.sender].followersList.length >0, "You have no friends" );
+    //     for (uint256 i = 0; i < userList[msg.sender].followersList.length; i++){
+    //     friendAddress = userList[msg.sender].followersList[i].pubkey;
+    //     postArray=getSingleUserPost(friendAddress);
+    //     for (uint256 j = 0; j <postArray.length; j++){
+    //         AllFriendPosts[msg.sender].push(postArray[j]);
+    //     }
+    //    }  
+    // }
+
+    //   function getAllFriendPosts() public view returns (Post[] memory){
+    //      return AllFriendPosts[msg.sender];
+    //    }
 
     
     receive() external payable {}

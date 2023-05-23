@@ -29,7 +29,6 @@ const Search = () => {
 
     const fetchdata = async () => {
       await ConnectWallet();
-      console.log("helllllo");
       await getAllAppUser();
     };
 

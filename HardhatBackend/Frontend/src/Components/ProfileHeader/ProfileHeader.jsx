@@ -9,9 +9,6 @@ const ProfileHeader = ({}) => {
   const [isPost, setIsPost] = useState(true);
   const [isFollower, setIsFollower] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [isFollowingBtn, setIsFollowingBtn] = useState(false);
-  const [followerListing, setfollowerListing] = useState([]);
-  const [followingList, setfollowingList] = useState([]);
   const {
     userLists,
     addFriends,
@@ -20,8 +17,6 @@ const ProfileHeader = ({}) => {
     ConnectWallet,
     connectedAccount,
     contract,
-    getMyProfilePost,
-    myProfilePosts,
   } = useContext(InscribleContext);
   useEffect(() => {
     const checkFriends = async () => {
@@ -29,41 +24,51 @@ const ProfileHeader = ({}) => {
         connectedAccountAddress: connectedAccount,
         accountAddress: address,
       });
-      setIsFollowingBtn(isFollowStatus);
+      setIsFollowing(isFollowStatus);
       console.log("isFoolowSTatus    " + isFollowStatus);
     };
 
     checkFriends();
-    getFollowersList();
-    getFollowersList();
-    getMyProfilePost(address);
   }, [connectedAccount, contract]);
 
+  const users = [
+    {
+      name: "Anna Wintour",
+      pic: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      address: "0x00030503554385247875847200048nt2457vn",
+    },
+    {
+      name: "Alia Chaudhary",
+      pic: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      address: "0x00030503554385247875847200048nt2457vn",
+    },
+    {
+      name: "Nathan Freeman",
+      pic: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      address: "0x00030503554385247875847200048nt2457vn",
+    },
+    {
+      name: "Samuel Drake",
+      pic: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      address: "0x00030503554385247875847200048nt2457vn",
+    },
+  ];
   const { username, address } = useParams();
-  const getFollowersList = async () => {
-    const followerListing = await contract.getMyFollowersList(address);
-    setfollowerListing(followerListing);
-  };
-
-  const getMyFollowingsList = async () => {
-    const followingList = await contract.getMyFollowingsList(address);
-    setfollowingList(followingList);
-  };
 
   // Function to handle the follow/unfollow action
   const handleFollowToggle = () => {
-    if (isFollowingBtn) {
+    if (isFollowing) {
       // Perform the unfollow action
       // ...
       removeFriends({ accountAddress: address });
 
-      setIsFollowingBtn(false); // Update the state to reflect unfollowing
+      setIsFollowing(false); // Update the state to reflect unfollowing
     } else {
       // Perform the follow action
       // ...
       addFriends({ accountAddress: address });
 
-      setIsFollowingBtn(true); // Update the state to reflect following
+      setIsFollowing(true); // Update the state to reflect following
     }
   };
 
@@ -84,19 +89,18 @@ const ProfileHeader = ({}) => {
               {username}
             </p>
             <button onClick={handleFollowToggle}>
-              {isFollowingBtn ? "Unfollow" : "Follow"}
+              {isFollowing ? "Unfollow" : "Follow"}
             </button>
           </div>
           <div className="profile-header_content-info">
             <div>
-              <span className="bold-5">{myProfilePosts.length}</span>
+              <span className="bold-5">12</span>
               <span
                 className={isPost ? "bold-7" : ""}
                 onClick={() => {
                   setIsFollower(false);
                   setIsFollowing(false);
                   setIsPost(true);
-                  getMyProfilePost(address);
                 }}
               >
                 {" "}
@@ -104,14 +108,13 @@ const ProfileHeader = ({}) => {
               </span>
             </div>
             <div>
-              <span className="bold-5">{followerListing.length}</span>
+              <span className="bold-5">12</span>
               <span
                 className={isFollower ? "bold-7" : ""}
                 onClick={() => {
                   setIsFollower(true);
                   setIsFollowing(false);
                   setIsPost(false);
-                  getFollowersList();
                 }}
               >
                 {" "}
@@ -119,14 +122,13 @@ const ProfileHeader = ({}) => {
               </span>
             </div>
             <div>
-              <span className="bold-5">{followingList.length}</span>
+              <span className="bold-5">12</span>
               <span
                 className={isFollowing ? "bold-7" : ""}
                 onClick={() => {
                   setIsFollower(false);
                   setIsFollowing(true);
                   setIsPost(false);
-                  getMyFollowingsList();
                 }}
               >
                 {" "}
@@ -145,7 +147,7 @@ const ProfileHeader = ({}) => {
             <h3>Followers</h3>
           </div>
           <div className="profile-usercard-body">
-            {followerListing.map((item, i) => {
+            {users.map((item, i) => {
               return (
                 <ProfileUserCard
                   userName={item.name}
@@ -165,7 +167,7 @@ const ProfileHeader = ({}) => {
             <h3>Following</h3>
           </div>
           <div className="profile-usercard-body">
-            {followingList.map((item, i) => {
+            {users.map((item, i) => {
               return (
                 <ProfileUserCard
                   userName={item.name}

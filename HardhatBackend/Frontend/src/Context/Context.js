@@ -40,7 +40,6 @@ export const InscribleProvider = ({ children }) => {
   const [userList, setUserLists] = useState([]);
   const [followerLists, setfollowerLists] = useState([]);
   const [followingLists, setfollowingLists] = useState([]);
-  const [myProfilePosts, setmyProfilePosts] = useState([]);
   const [error, setError] = useState("");
 
   //FUNCTION TO GET THE CONNECTED ACCOUNT
@@ -80,17 +79,17 @@ export const InscribleProvider = ({ children }) => {
       // const contract = await ConnectWallet();
       const addMyFriend = await contract.addFriend(accountAddress);
       await addMyFriend.wait();
-      // console.log("follower !!!");
-      // const followerListing = await contract.getMyFollowersList();
-      // setfollowerLists(followerListing);
-      // console.log("this is from follower list");
-      // console.log(followerListing);
+      console.log("follower !!!");
+      const followerListing = await contract.getMyFriendList();
+      setfollowerLists(followerListing);
+      console.log("this is from follower list");
+      console.log(followerListing);
 
-      // console.log("followings    ????");
-      // const followingListing = await contract.getMyFollowingsList();
-      // setfollowingLists(followingListing);
-      // console.log("this is my following list");
-      // console.log(followingListing);
+      console.log("followings    ????");
+      const followingListing = await contract.getMyFollowingsList();
+      setfollowingLists(followingListing);
+      console.log("this is my following list");
+      console.log(followingListing);
     } catch (error) {
       setError("Something went wrong while adding friends, try again");
     }
@@ -125,16 +124,16 @@ export const InscribleProvider = ({ children }) => {
       await removeMyFriend.wait();
       console.log("this is from remove friend!!!");
       console.log("follower !!!");
-      // const followerListing = await contract.getMyFriendList();
-      // setfollowerLists(followerListing);
-      // console.log("this is from follower list");
-      // console.log(followerListing);
+      const followerListing = await contract.getMyFriendList();
+      setfollowerLists(followerListing);
+      console.log("this is from follower list");
+      console.log(followerListing);
 
-      // console.log("followings    ????");
-      // const followingListing = await contract.getMyFollowingsList();
-      // setfollowingLists(followingListing);
-      // console.log("this is my following list");
-      // console.log(followingListing);
+      console.log("followings    ????");
+      const followingListing = await contract.getMyFollowingsList();
+      setfollowingLists(followingListing);
+      console.log("this is my following list");
+      console.log(followingListing);
     } catch (error) {
       setError("Something went wrong while adding friends, try again");
     }
@@ -214,14 +213,6 @@ export const InscribleProvider = ({ children }) => {
     setSingleUserPost(Posts);
     setIsLoading(false);
   };
-  //this function return single user profile posts
-  const getMyProfilePost = async (address) => {
-    console.log("in get MyProfilePost");
-    console.log(address);
-    const Posts = await contract.getMyProfilePost(address);
-    console.log("after calling getMyProfilrPost");
-    setmyProfilePosts(Posts);
-  };
 
   useEffect(() => {
     const getAccount = async () => {
@@ -257,8 +248,6 @@ export const InscribleProvider = ({ children }) => {
         isLoading,
         userList,
         checkAlreadyFriend,
-        getMyProfilePost,
-        myProfilePosts,
       }}
     >
       {children}
