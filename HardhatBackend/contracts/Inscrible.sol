@@ -6,7 +6,8 @@ contract Inscrible {
     //USER STRUCT
     struct User{
         string username;
-        friend[] friendList;
+        friend[] followersList;
+        friend[] followingsList;
         //chawala
         Post [] myPosts;
         // string profilePic; do add later
@@ -73,38 +74,99 @@ contract Inscrible {
         userList[msg.sender].username = _username;
         AllUsers.push(AllUserStruck(_username, msg.sender));
     }
-    //addFriend
-     function addFriend(address friend_key,string calldata name) external{
+    //addFriend Function
+    //this function will add the msg.sender(follower) in the followersList of the person whom he is following
+    //following_key is the address of the person whom he is following
+     function addFriend(address following_key) external{
+        //msg.sender is actually the follower
         require(checkUser(msg.sender), "Create an account first");
-        require(checkUser(friend_key), "User is not registered!");
-        require(msg.sender != friend_key, "Users cannot add themeselves as friends");
-        require(checkAlreadyFriends(msg.sender,friend_key)== false, "These users are already friends");
+        require(checkUser(following_key), "User is not registered!");
+        require(msg.sender != following_key, "Users cannot add themeselves as friends");
+        require(checkAlreadyFriends(msg.sender,following_key)== false, "These users are already friends");
 
          //_addFriend(msg.sender, friend_key, name);
-          _addFriend(friend_key, msg.sender, userList[msg.sender].username);
-         for(uint256 i=0;i<userList[friend_key].myPosts.length;i++)
+          _addFriend(following_key, msg.sender, userList[msg.sender].username);
+
+         for(uint256 i=0;i<userList[following_key].myPosts.length;i++)
          {
-            singleUserPostList[msg.sender].push(userList[friend_key].myPosts[i]);
+            singleUserPostList[msg.sender].push(userList[following_key].myPosts[i]);
          }
     }
     //checkAlreadyFriend
-    function checkAlreadyFriends(address sender_key,address friend_key) public view returns (bool){
+    //will check if me(msg.sender means follower) exist in the followerList of the perosn whom he is following
+    function checkAlreadyFriends(address me,address following_key) public view returns (bool){
 
-        for(uint256 i = 0; i < userList[friend_key].friendList.length; i++){
+        for(uint256 i = 0; i < userList[following_key].followersList.length; i++){
             
-            if(userList[friend_key].friendList[i].pubkey == sender_key) return true;
+            if(userList[following_key].followersList[i].pubkey == me) return true;
         }
         return false;
     }
     //_AddFriend
-    function _addFriend(address friend_key, address me, string memory name) internal{
-        friend memory newFriend = friend(me, name);
-       userList[friend_key].friendList.push(newFriend);
+    function _addFriend(address following_key, address me, string memory name) internal{
+        friend memory newFollower = friend(me, name);
+        userList[following_key].followersList.push(newFollower);
+
+        friend memory newFollowing = friend(following_key, userList[following_key].username);
+        userList[me].followingsList.push(newFollowing);
+    }
+
+
+    function removeFriend(address followingAddress) public {
+
+        //Removing follower(msg.sender) from the followerList of our following(followingAddress)
+        uint256 followerIndex;
+        bool found = false;
+
+        // Find the index of the friend in the array
+        for (uint256 i = 0; i < userList[followingAddress].followersList.length; i++) {
+            if (userList[followingAddress].followersList[i].pubkey == msg.sender) {
+                followerIndex = i;
+                found = true;
+                break;
+            }
+        }
+        // If the friend is found, remove it
+        if (found) {
+            // Replace the element at friendIndex with the last element
+            userList[followingAddress].followersList[followerIndex] = userList[followingAddress].followersList[userList[followingAddress].followersList.length - 1];
+            // Reduce the size of the array by one
+            userList[followingAddress].followersList.pop();
+       }
+
+        //------------------------------------------------------------------------------
+        //Removing followingAddress from our followingList
+        //-------------------------------------------------------------------------------
+
+        uint256 followingIndex;
+        bool foundFollowing = false;
+
+        // Find the index of the friend in the array
+        for (uint256 i = 0; i < userList[msg.sender].followingsList.length; i++) {
+            if (userList[msg.sender].followingsList[i].pubkey == followingAddress) {
+                followingIndex = i;
+                foundFollowing = true;
+                break;
+            }
+        }
+        // If the friend is found, remove it
+        if (foundFollowing) {
+            // Replace the element at friendIndex with the last element
+            uint256 lengthOfFollowingList  = userList[msg.sender].followingsList.length;
+            userList[msg.sender].followingsList[followingIndex] = userList[msg.sender].followingsList[lengthOfFollowingList - 1];
+            // Reduce the size of the array by one
+            userList[msg.sender].followingsList.pop();
+       }
+
+
     }
 
     //GETMY FRIEND
-    function getMyFriendList() external view returns(friend[] memory){
-        return userList[msg.sender].friendList;
+    function getMyFollowersList() external view returns(friend[] memory){
+        return userList[msg.sender].followersList;
+    }
+    function getMyFollowingsList() external view returns(friend[] memory){
+        return userList[msg.sender].followingsList;
     }
 
     //TO POST IMAGES TO BLOCKCHAIN
@@ -125,18 +187,14 @@ contract Inscrible {
             likedByUser : new string[](0)         
         });
             
-        for(uint256 i = 0; i < userList[msg.sender].friendList.length; i++){
-              singleUserPostList[userList[msg.sender].friendList[i].pubkey].push(newPost);
+        for(uint256 i = 0; i < userList[msg.sender].followersList.length; i++){
+              singleUserPostList[userList[msg.sender].followersList[i].pubkey].push(newPost);
          } 
         userList[msg.sender].myPosts.push(newPost);
-        // singleUserPostList[msg.sender].push(newPost);
+        singleUserPostList[msg.sender].push(newPost);
         allposts.push(newPost);
-        // _AllFriendPosts();
+        
     }
-
-
-
-    
 
     function getAllPosts() public view returns(Post [] memory){
         return allposts;
@@ -159,37 +217,14 @@ contract Inscrible {
             return  singleUserPostList[key][singleUserPostList[key].length-1]; 
         
     } 
-    function removeFriend(address friendAddress) public {
-        uint256 friendIndex;
-        bool found = false;
-
-        // Find the index of the friend in the array
-        for (uint256 i = 0; i < userList[friendAddress].friendList.length; i++) {
-            if (userList[friendAddress].friendList[i].pubkey == msg.sender) {
-                friendIndex = i;
-                found = true;
-                break;
-            }
-        }
-        // If the friend is found, remove it
-        if (found) {
-            // Replace the element at friendIndex with the last element
-            userList[friendAddress].friendList[friendIndex] = userList[friendAddress].friendList[userList[friendAddress].friendList.length - 1];
-            // Reduce the size of the array by one
-            userList[friendAddress].friendList.pop();
-    }
-    }
-
-
-
     ////friends posts 
 
     //  function _AllFriendPosts()  internal {
     //     address friendAddress;
     //     Post [] memory postArray;
-    //     require(userList[msg.sender].friendList.length >0, "You have no friends" );
-    //     for (uint256 i = 0; i < userList[msg.sender].friendList.length; i++){
-    //     friendAddress = userList[msg.sender].friendList[i].pubkey;
+    //     require(userList[msg.sender].followersList.length >0, "You have no friends" );
+    //     for (uint256 i = 0; i < userList[msg.sender].followersList.length; i++){
+    //     friendAddress = userList[msg.sender].followersList[i].pubkey;
     //     postArray=getSingleUserPost(friendAddress);
     //     for (uint256 j = 0; j <postArray.length; j++){
     //         AllFriendPosts[msg.sender].push(postArray[j]);

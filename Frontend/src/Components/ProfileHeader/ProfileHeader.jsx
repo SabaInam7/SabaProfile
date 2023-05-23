@@ -20,10 +20,12 @@ const ProfileHeader = ({}) => {
   } = useContext(InscribleContext);
   useEffect(() => {
     const checkFriends = async () => {
-      await checkAlreadyFriend({
+      const isFollowStatus = await checkAlreadyFriend({
         connectedAccountAddress: connectedAccount,
         accountAddress: address,
       });
+      setIsFollowing(isFollowStatus);
+      console.log("isFoolowSTatus    " + isFollowStatus);
     };
 
     checkFriends();
@@ -58,13 +60,13 @@ const ProfileHeader = ({}) => {
     if (isFollowing) {
       // Perform the unfollow action
       // ...
-      removeFriends({ name: username, accountAddress: address });
+      removeFriends({ accountAddress: address });
 
       setIsFollowing(false); // Update the state to reflect unfollowing
     } else {
       // Perform the follow action
       // ...
-      addFriends({ name: username, accountAddress: address });
+      addFriends({ accountAddress: address });
 
       setIsFollowing(true); // Update the state to reflect following
     }

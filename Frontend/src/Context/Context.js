@@ -38,7 +38,8 @@ export const InscribleProvider = ({ children }) => {
   const [singleUserPost, setSingleUserPost] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userList, setUserLists] = useState([]);
-  const [friendLists, setFriendLists] = useState([]);
+  const [followerLists, setfollowerLists] = useState([]);
+  const [followingLists, setfollowingLists] = useState([]);
   const [error, setError] = useState("");
 
   //FUNCTION TO GET THE CONNECTED ACCOUNT
@@ -73,16 +74,22 @@ export const InscribleProvider = ({ children }) => {
     }
   };
   //ADD YOUR FRIENDS
-  const addFriends = async ({ name, accountAddress }) => {
+  const addFriends = async ({ accountAddress }) => {
     try {
       // const contract = await ConnectWallet();
-      const addMyFriend = await contract.addFriend(accountAddress, name);
+      const addMyFriend = await contract.addFriend(accountAddress);
       await addMyFriend.wait();
-      console.log("Connect wallet called !!!");
-      const friendLists1 = await contract.getMyFriendList();
-      setFriendLists(friendLists1);
-      console.log("this is from connect wallet FriendList");
-      console.log(friendLists1);
+      console.log("follower !!!");
+      const followerListing = await contract.getMyFriendList();
+      setfollowerLists(followerListing);
+      console.log("this is from follower list");
+      console.log(followerListing);
+
+      console.log("followings    ????");
+      const followingListing = await contract.getMyFollowingsList();
+      setfollowingLists(followingListing);
+      console.log("this is my following list");
+      console.log(followingListing);
     } catch (error) {
       setError("Something went wrong while adding friends, try again");
     }
@@ -93,8 +100,8 @@ export const InscribleProvider = ({ children }) => {
     accountAddress,
   }) => {
     try {
-      console.log(contract);
-      console.log(connectedAccountAddress + "          " + accountAddress);
+      // console.log(contract);
+      // console.log(connectedAccountAddress + "          " + accountAddress);
       const checkFriend = await contract.checkAlreadyFriends(
         connectedAccountAddress,
         accountAddress
@@ -110,16 +117,23 @@ export const InscribleProvider = ({ children }) => {
 
   //check is user already exits
 
-  const removeFriends = async ({ name, accountAddress }) => {
+  const removeFriends = async ({ accountAddress }) => {
     try {
       // const contract = await ConnectWallet();
       const removeMyFriend = await contract.removeFriend(accountAddress);
       await removeMyFriend.wait();
-      console.log("Connect wallet called !!!");
-      const friendLists = await contract.getMyFriendList();
-      setFriendLists(friendLists);
-      console.log("this is from connect wallet FriendList");
-      console.log(friendLists);
+      console.log("this is from remove friend!!!");
+      console.log("follower !!!");
+      const followerListing = await contract.getMyFriendList();
+      setfollowerLists(followerListing);
+      console.log("this is from follower list");
+      console.log(followerListing);
+
+      console.log("followings    ????");
+      const followingListing = await contract.getMyFollowingsList();
+      setfollowingLists(followingListing);
+      console.log("this is my following list");
+      console.log(followingListing);
     } catch (error) {
       setError("Something went wrong while adding friends, try again");
     }
@@ -222,7 +236,6 @@ export const InscribleProvider = ({ children }) => {
         GetAllPosts,
         GetPostByUser,
         getAllAppUser,
-        setFriendLists,
         addFriends,
         removeFriends,
         isMetamask,
@@ -233,7 +246,6 @@ export const InscribleProvider = ({ children }) => {
         allPosts,
         singleUserPost,
         isLoading,
-        friendLists,
         userList,
         checkAlreadyFriend,
       }}
